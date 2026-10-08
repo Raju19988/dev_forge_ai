@@ -1,9 +1,11 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
 
-const PORT = 5001;
+app.use(cors());
 
+const PORT = 5001;
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
