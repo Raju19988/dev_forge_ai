@@ -1,91 +1,114 @@
+import DashboardCard from "../components/DashboardCard";
 import DashboardShell from "../components/DashboardShell";
+import { dashboardFeatures } from "./dashboardData";
 
-const stats = [
+const overviewStats = [
   {
-    label: "Resume Score",
-    value: "—",
-    description: "Your analysis will appear here",
+    label: "Profile completion",
+    value: "70%",
   },
   {
-    label: "Interview Sessions",
-    value: "0",
-    description: "Practice sessions completed",
+    label: "Practice sessions",
+    value: "3",
   },
   {
-    label: "DSA Progress",
-    value: "0%",
-    description: "Your practice progress",
-  },
-  {
-    label: "GitHub Activity",
-    value: "—",
-    description: "Connect GitHub in a future step",
+    label: "DSA problems",
+    value: "24",
   },
 ];
 
 export default function DashboardPage() {
   return (
     <DashboardShell>
-      <section>
-        <div className="mb-8">
-          <p className="text-sm font-medium text-violet-400">
-            DEVELOPER WORKSPACE
+      <div className="mx-auto max-w-7xl">
+        {/* Welcome section */}
+        <section className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-400">
+            Developer workspace
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Welcome to DevForge AI
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Your developer journey starts here.
           </h1>
 
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-            Your workspace for resume improvement, interview
-            preparation, and developer growth.
+            Track your progress, prepare for technical interviews, improve
+            your resume, and organize your developer profile in one place.
           </p>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => (
+        {/* Overview statistics */}
+        <section
+          aria-label="Developer progress overview"
+          className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3"
+        >
+          {overviewStats.map((stat) => (
             <article
               key={stat.label}
               className="rounded-xl border border-white/10 bg-white/[0.03] p-5"
             >
-              <p className="text-sm text-slate-400">
-                {stat.label}
-              </p>
+              <p className="text-sm text-slate-400">{stat.label}</p>
 
-              <p className="mt-4 text-3xl font-bold text-white">
+              <p className="mt-3 text-3xl font-bold text-white">
                 {stat.value}
               </p>
 
-              <p className="mt-2 text-xs leading-5 text-slate-500">
-                {stat.description}
+              <p className="mt-2 text-xs text-slate-500">
+                Illustrative mock data
               </p>
             </article>
           ))}
-        </div>
+        </section>
 
-        <section className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-7">
-          <p className="text-sm font-medium text-violet-400">
-            GET STARTED
+        {/* Feature cards */}
+        <section aria-labelledby="features-heading">
+          <div className="mb-5">
+            <h2
+              id="features-heading"
+              className="text-xl font-semibold text-white sm:text-2xl"
+            >
+              Your workspace
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Everything you need to work toward your developer goals.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {dashboardFeatures.map((feature) => (
+              <DashboardCard
+                key={feature.id}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                metric={feature.metric}
+                metricLabel={feature.metricLabel}
+                status={feature.status}
+                actionLabel={feature.actionLabel}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Upcoming features */}
+        <section className="mt-10 rounded-2xl border border-violet-400/20 bg-violet-500/[0.06] p-6 sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-wider text-violet-300">
+            Built for your growth
           </p>
 
-          <h2 className="mt-2 text-xl font-semibold">
-            Build your developer profile
+          <h2 className="mt-3 text-xl font-semibold text-white">
+            One workspace. Multiple ways to improve.
           </h2>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-            Your dashboard layout is ready. In future steps,
-            we'll connect real profile data, resume analysis,
-            interview sessions, and GitHub activity.
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+            This is the first version of your dashboard. In future
+            development steps, we'll connect real profile information,
+            resume analysis, interview sessions, coding progress, and
+            GitHub activity.
           </p>
-
-          <a
-            href="/"
-            className="mt-5 inline-flex rounded-lg bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400"
-          >
-            Return to landing page
-          </a>
         </section>
-      </section>
+      </div>
     </DashboardShell>
   );
 }
