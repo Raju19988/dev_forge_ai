@@ -17,7 +17,7 @@ export const dashboardFeatures: DashboardFeature[] = [
     description:
       "Organize your skills, education, projects, and developer experience.",
     metric: "70%",
-    metricLabel: "Profile completion · Sample",
+    metricLabel: "Profile completion · Mock data",
     status: "In progress",
     actionLabel: "View profile",
   },
@@ -26,10 +26,10 @@ export const dashboardFeatures: DashboardFeature[] = [
     icon: "📄",
     title: "Resume Analyzer",
     description:
-      "Prepare for resume analysis and identify opportunities to improve your resume.",
-    metric: "Not analyzed",
-    metricLabel: "No real analysis performed",
-    status: "Not started",
+      "Review your resume and identify opportunities to improve your professional profile.",
+    metric: "82/100",
+    metricLabel: "Illustrative score · No real analysis",
+    status: "Preview",
     actionLabel: "Explore resume tools",
   },
   {
@@ -37,7 +37,7 @@ export const dashboardFeatures: DashboardFeature[] = [
     icon: "🎯",
     title: "Interview Practice",
     description:
-      "Prepare for technical interviews with a structured practice workflow.",
+      "Prepare for technical interviews through structured practice sessions.",
     metric: "3 sessions",
     metricLabel: "Example practice activity",
     status: "Preview",
@@ -48,10 +48,10 @@ export const dashboardFeatures: DashboardFeature[] = [
     icon: "💻",
     title: "Coding Practice",
     description:
-      "Build your problem-solving skills and review data structures and algorithms.",
+      "Improve your problem-solving skills with data structures and algorithms.",
     metric: "24 solved",
     metricLabel: "Example DSA progress",
-    status: "Preview",
+    status: "In progress",
     actionLabel: "Explore coding",
   },
   {
@@ -59,7 +59,7 @@ export const dashboardFeatures: DashboardFeature[] = [
     icon: "🐙",
     title: "GitHub Insights",
     description:
-      "Prepare to review repositories, programming languages, and contribution activity.",
+      "Explore repository activity, programming languages, and contributions.",
     metric: "Not connected",
     metricLabel: "GitHub integration not implemented",
     status: "Coming soon",
