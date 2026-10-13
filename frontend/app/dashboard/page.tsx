@@ -1,3 +1,5 @@
+
+import BackendStatus from "../components/BackendStatus";
 import DashboardCard from "../components/DashboardCard";
 import DashboardShell from "../components/DashboardShell";
 import { dashboardFeatures } from "./dashboardData";
@@ -36,6 +38,8 @@ export default function DashboardPage() {
             your resume, and organize your developer profile in one place.
           </p>
         </section>
+        {/* Live backend connection status */}
+         <BackendStatus />
 
         {/* Overview statistics */}
         <section
