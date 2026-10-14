@@ -1,13 +1,4 @@
-export interface DashboardFeature {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  metric: string;
-  metricLabel: string;
-  status: string;
-  actionLabel: string;
-}
+import type { DashboardFeature } from "../../types/dashboard";
 
 export const dashboardFeatures: DashboardFeature[] = [
   {

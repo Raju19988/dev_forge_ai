@@ -1,4 +1,3 @@
-
 import BackendStatus from "../components/BackendStatus";
 import DashboardCard from "../components/DashboardCard";
 import DashboardShell from "../components/DashboardShell";
@@ -38,8 +37,9 @@ export default function DashboardPage() {
             your resume, and organize your developer profile in one place.
           </p>
         </section>
+
         {/* Live backend connection status */}
-         <BackendStatus />
+        <BackendStatus />
 
         {/* Overview statistics */}
         <section
@@ -107,7 +107,7 @@ export default function DashboardPage() {
 
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
             This is the first version of your dashboard. In future
-            development steps, we'll connect real profile information,
+            development steps, we&apos;ll connect real profile information,
             resume analysis, interview sessions, coding progress, and
             GitHub activity.
           </p>

@@ -1,10 +1,12 @@
+import type { DashboardFeatureStatus } from "../../types/dashboard";
+
 interface DashboardCardProps {
   icon: string;
   title: string;
   description: string;
   metric: string;
   metricLabel: string;
-  status: string;
+  status: DashboardFeatureStatus;
   actionLabel: string;
 }
 

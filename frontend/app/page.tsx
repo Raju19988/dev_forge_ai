@@ -74,7 +74,7 @@ export default function Home() {
           <p className="eyebrow">YOUR JOURNEY STARTS HERE</p>
 
           <h2 id="about">
-            Don't just prepare.
+            Don&apos;t just prepare.
             <br />
             <span>Become the developer.</span>
           </h2>
