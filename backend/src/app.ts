@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import { requestLogger } from "./middleware/requestLogger";
-import healthRoutes from "./routes/health.routes";
+import v1Routes from "./routes/v1";
 
 const app = express();
 
@@ -11,6 +11,6 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.use("/api", healthRoutes);
+app.use("/api/v1", v1Routes);
 
 export default app;
