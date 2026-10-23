@@ -84,3 +84,88 @@ export async function getUserWithProfileById(
     developerProfile,
   };
 }
+
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  passwordHash: string;
+}
+
+export async function createUser(
+  input: CreateUserInput
+): Promise<User> {
+  const result = await pool.query<{
+    id: string;
+    name: string;
+    email: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>(
+    `
+      INSERT INTO users (name, email, password_hash)
+      VALUES ($1, $2, $3)
+      RETURNING
+        id::text AS id,
+        name,
+        email,
+        created_at AS "createdAt",
+        updated_at AS "updatedAt"
+    `,
+    [input.name, input.email, input.passwordHash]
+  );
+
+  const row = result.rows[0];
+
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+export interface UserWithPasswordHash extends User {
+  passwordHash: string;
+}
+
+export async function getUserByEmail(
+  email: string
+): Promise<UserWithPasswordHash | null> {
+  const result = await pool.query<{
+    id: string;
+    name: string;
+    email: string;
+    passwordHash: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>(
+    `
+      SELECT
+        id::text AS id,
+        name,
+        email,
+        password_hash AS "passwordHash",
+        created_at AS "createdAt",
+        updated_at AS "updatedAt"
+      FROM users
+      WHERE email = $1
+      LIMIT 1
+    `,
+    [email]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  const row = result.rows[0];
+
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    passwordHash: row.passwordHash,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
