@@ -2,6 +2,7 @@ import BackendStatus from "../components/BackendStatus";
 import DashboardCard from "../components/DashboardCard";
 import DashboardShell from "../components/DashboardShell";
 import { dashboardFeatures } from "./dashboardData";
+import AuthGuard from "../components/AuthGuard";
 
 const overviewStats = [
   {
@@ -20,6 +21,7 @@ const overviewStats = [
 
 export default function DashboardPage() {
   return (
+    <AuthGuard>
     <DashboardShell>
       <div className="mx-auto max-w-7xl">
         {/* Welcome section */}
@@ -114,5 +116,6 @@ export default function DashboardPage() {
         </section>
       </div>
     </DashboardShell>
+    </AuthGuard>
   );
 }

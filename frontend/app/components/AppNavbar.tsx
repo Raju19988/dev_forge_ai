@@ -1,28 +1,31 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function AppNavbar() {
+  const router = useRouter();
+
+  function handleLogout() {
+    sessionStorage.removeItem("devforge_access_token");
+    router.replace("/login");
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95 backdrop-blur">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a
-          href="/dashboard"
-          className="text-xl font-bold tracking-tight text-white"
-        >
-          DevForge<span className="text-violet-400">AI</span>
-        </a>
-
-        <div className="flex items-center gap-3 sm:gap-5">
-          <span className="hidden text-sm text-slate-400 sm:inline">
-            Developer Workspace
-          </span>
-
-          <button
-            type="button"
-            aria-label="User profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-violet-400/30 bg-violet-500/10 font-semibold text-violet-300"
-          >
-            D
-          </button>
-        </div>
+    <header className="flex items-center justify-between border-b border-white/10 bg-slate-950 px-6 py-4 text-white">
+      <div>
+        <h1 className="text-lg font-bold">DevForge AI</h1>
+        <p className="text-sm text-slate-400">
+          Developer Workspace
+        </p>
       </div>
+
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+      >
+        Logout
+      </button>
     </header>
   );
 }
