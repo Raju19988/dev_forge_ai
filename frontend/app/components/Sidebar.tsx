@@ -1,3 +1,8 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 const navigationItems = [
   { label: "Dashboard", href: "/dashboard", icon: "⌂" },
   { label: "My Profile", href: "/profile", icon: "◉" },
@@ -9,6 +14,8 @@ const navigationItems = [
 ];
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="w-full border-b border-white/10 bg-slate-950 p-4 md:min-h-[calc(100vh-4rem)] md:w-64 md:shrink-0 md:border-b-0 md:border-r">
       <div className="mb-4 hidden px-3 pt-4 md:block">
@@ -21,11 +28,11 @@ export default function Sidebar() {
         aria-label="Dashboard navigation"
         className="flex gap-2 overflow-x-auto md:flex-col"
       >
-        {navigationItems.map((item, index) => {
-          const isActive = index === 0;
+        {navigationItems.map((item) => {
+          const isActive = pathname === item.href;
 
           return (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
@@ -40,15 +47,13 @@ export default function Sidebar() {
               </span>
 
               <span>{item.label}</span>
-            </a>
+            </Link>
           );
         })}
       </nav>
 
       <div className="mt-8 hidden rounded-xl border border-white/10 bg-white/[0.03] p-4 md:block">
-        <p className="text-sm font-semibold text-white">
-          Keep growing
-        </p>
+        <p className="text-sm font-semibold text-white">Keep growing</p>
 
         <p className="mt-2 text-xs leading-5 text-slate-400">
           Your developer journey starts with consistent practice.

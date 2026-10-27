@@ -10,6 +10,58 @@ export interface AuthUser {
   createdAt?: string;
   updatedAt?: string;
 }
+// Education details stored in a developer profile.
+export interface EducationEntry {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startYear: number | null;
+  graduationYear: number | null;
+}
+
+// External links associated with a developer.
+export interface DeveloperLinks {
+  github: string | null;
+  linkedin: string | null;
+  portfolio: string | null;
+}
+
+// A project listed on a developer's profile.
+export interface DeveloperProject {
+  name: string;
+  description: string;
+  technologies: string[];
+  projectUrl: string | null;
+  githubUrl: string | null;
+}
+
+// Profile fields stored in PostgreSQL.
+export interface DeveloperProfile {
+  id: string;
+  userId: string;
+  githubUsername: string | null;
+  bio: string | null;
+  headline: string | null;
+  location: string | null;
+  skills: string[];
+  education: EducationEntry[];
+  links: DeveloperLinks;
+  projects: DeveloperProject[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Fields the frontend sends when creating or updating a profile.
+export interface DeveloperProfileInput {
+  githubUsername: string | null;
+  bio: string | null;
+  headline: string | null;
+  location: string | null;
+  skills: string[];
+  education: EducationEntry[];
+  links: DeveloperLinks;
+  projects: DeveloperProject[];
+}
 
 // Standard response structure returned by the backend.
 interface ApiResponse<T> {
@@ -121,4 +173,35 @@ export async function getCurrentUser(
   );
 
   return readResponse<{ user: AuthUser }>(response);
+}
+// Retrieve the current user's developer profile.
+export async function getMyProfile(
+  accessToken: string
+): Promise<ApiResponse<DeveloperProfile | null>> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/profile`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  return readResponse<DeveloperProfile | null>(response);
+}
+
+// Create or update the current user's developer profile.
+export async function updateMyProfile(
+  accessToken: string,
+  input: DeveloperProfileInput
+): Promise<ApiResponse<DeveloperProfile>> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(input),
+  });
+
+  return readResponse<DeveloperProfile>(response);
 }

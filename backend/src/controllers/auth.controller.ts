@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { getUserWithProfileById } from "../models/user.model";
 import {
   loginUser,
   registerUser,
@@ -95,15 +96,15 @@ export async function login(
   }
 }
 
-export function getCurrentUser(
+export async function getCurrentUser(
   req: import("express").Request,
   res: import("express").Response
-): void {
-  const user = (
+): Promise<void> {
+  const authenticatedUser = (
     req as import("../middleware/auth.middleware").AuthenticatedRequest
   ).user;
 
-  if (!user) {
+  if (!authenticatedUser) {
     res.status(401).json({
       success: false,
       message: "Authentication required",
@@ -111,11 +112,30 @@ export function getCurrentUser(
     return;
   }
 
-  res.status(200).json({
-    success: true,
-    message: "Authenticated user retrieved successfully",
-    data: {
-      user,
-    },
-  });
+  try {
+    const result = await getUserWithProfileById(authenticatedUser.id);
+
+    if (!result) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Authenticated user retrieved successfully",
+      data: {
+        user: result.user,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to retrieve authenticated user:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve authenticated user",
+    });
+  }
 }

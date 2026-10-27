@@ -24,6 +24,12 @@ interface UserWithProfileRow {
   profileUserId: string | null;
   githubUsername: string | null;
   bio: string | null;
+  headline: string | null;
+  location: string | null;
+  skills: string[] | null;
+  education: DeveloperProfile["education"] | null;
+  links: DeveloperProfile["links"] | null;
+  projects: DeveloperProfile["projects"] | null;
   profileCreatedAt: Date | null;
   profileUpdatedAt: Date | null;
 }
@@ -43,6 +49,12 @@ export async function getUserWithProfileById(
         dp.user_id::text AS "profileUserId",
         dp.github_username AS "githubUsername",
         dp.bio,
+        dp.headline,
+        dp.location,
+        dp.skills,
+        dp.education,
+        dp.links,
+        dp.projects,
         dp.created_at AS "profileCreatedAt",
         dp.updated_at AS "profileUpdatedAt"
       FROM users AS u
@@ -68,16 +80,26 @@ export async function getUserWithProfileById(
   };
 
   const developerProfile: DeveloperProfile | null =
-    row.profileId === null
-      ? null
-      : {
-          id: row.profileId,
-          userId: row.profileUserId!,
-          githubUsername: row.githubUsername,
-          bio: row.bio,
-          createdAt: row.profileCreatedAt!,
-          updatedAt: row.profileUpdatedAt!,
-        };
+  row.profileId === null
+    ? null
+    : {
+        id: row.profileId,
+        userId: row.profileUserId!,
+        githubUsername: row.githubUsername,
+        bio: row.bio,
+        headline: row.headline,
+        location: row.location,
+        skills: row.skills ?? [],
+        education: row.education ?? [],
+        links: row.links ?? {
+          github: null,
+          linkedin: null,
+          portfolio: null,
+        },
+        projects: row.projects ?? [],
+        createdAt: row.profileCreatedAt!,
+        updatedAt: row.profileUpdatedAt!,
+      };
 
   return {
     user,
