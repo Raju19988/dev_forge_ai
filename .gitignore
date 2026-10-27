@@ -16,4 +16,12 @@ build/
 
 # macOS
 .DS_Store
+# Environment variables and local secret backups
+.env
+.env.*
+!.env.example
+
+backend/.env
+backend/.env.*
+!backend/.env.example
 
