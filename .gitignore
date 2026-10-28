@@ -24,4 +24,7 @@ build/
 backend/.env
 backend/.env.*
 !backend/.env.example
+# Uploaded resumes contain private user data
+backend/storage/resumes/*
+!backend/storage/resumes/.gitkeep
 
