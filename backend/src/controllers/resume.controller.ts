@@ -2,10 +2,15 @@ import type { Response } from "express";
 import fs from "node:fs/promises";
 
 import type { AuthenticatedRequest } from "../middleware/auth.middleware";
+
 import {
   saveUploadedResume,
   getUserResumes,
 } from "../services/resume.service";
+
+import {
+  ResumePdfExtractionError,
+} from "../services/pdfExtraction.service";
 
 export async function uploadResumeController(
   req: AuthenticatedRequest,
@@ -35,7 +40,7 @@ export async function uploadResumeController(
   }
 
   try {
-    // Inspect the file signature instead of trusting client-supplied metadata.
+    // Verify the actual PDF signature instead of trusting MIME metadata.
     const handle = await fs.open(file.path, "r");
 
     let signature: Buffer;
@@ -48,19 +53,25 @@ export async function uploadResumeController(
     }
 
     if (signature.toString("ascii") !== "%PDF-") {
-  // Delete invalid files so they do not remain in private storage.
-  await fs.unlink(file.path).catch(() => undefined);
+      await fs.unlink(file.path).catch(() => undefined);
 
-  res.status(400).json({
-    success: false,
-    message: "The uploaded file does not have a valid PDF signature.",
-  });
-  return;
-}
+      res.status(400).json({
+        success: false,
+        message: "The uploaded file does not have a valid PDF signature.",
+        code: "INVALID_PDF",
+      });
+      return;
+    }
 
-    const resume = await saveUploadedResume(userId, file.path);
+    // Extract PDF text and save resume metadata.
+    const resume = await saveUploadedResume(
+      userId,
+      file.path,
+      file.originalname,
+      file.size
+    );
 
-    // Do not expose the private server-side storage path.
+    // Never expose the private server-side storage path or extracted text.
     res.status(201).json({
       success: true,
       message: "Resume uploaded successfully.",
@@ -68,13 +79,15 @@ export async function uploadResumeController(
         resume: {
           id: resume.id,
           userId: resume.userId,
+          originalFilename: resume.originalFilename,
+          fileSize: resume.fileSize,
           analysisScore: resume.analysisScore,
           createdAt: resume.createdAt,
         },
       },
     });
   } catch (error) {
-    // Safe even if the service has already removed the file.
+    // The service may already have deleted the file.
     await fs.unlink(file.path).catch((cleanupError: NodeJS.ErrnoException) => {
       if (cleanupError.code !== "ENOENT") {
         console.error(
@@ -83,6 +96,16 @@ export async function uploadResumeController(
         );
       }
     });
+
+    // Invalid or text-empty PDFs are client errors, not server errors.
+    if (error instanceof ResumePdfExtractionError) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+      return;
+    }
 
     console.error("Resume upload failed:", error);
 
@@ -110,13 +133,15 @@ export async function listMyResumes(
   try {
     const resumes = await getUserResumes(userId);
 
-    // Return only metadata; stored files remain private.
+    // Return metadata only, never private storage paths or extracted text.
     res.status(200).json({
       success: true,
       data: {
         resumes: resumes.map((resume) => ({
           id: resume.id,
           userId: resume.userId,
+          originalFilename: resume.originalFilename,
+          fileSize: resume.fileSize,
           analysisScore: resume.analysisScore,
           createdAt: resume.createdAt,
         })),

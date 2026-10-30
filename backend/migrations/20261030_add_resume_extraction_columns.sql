@@ -1,0 +1,12 @@
+BEGIN;
+
+ALTER TABLE resumes
+ADD COLUMN IF NOT EXISTS original_filename VARCHAR(255);
+
+ALTER TABLE resumes
+ADD COLUMN IF NOT EXISTS file_size BIGINT;
+
+ALTER TABLE resumes
+ADD COLUMN IF NOT EXISTS extracted_text TEXT;
+
+COMMIT;
