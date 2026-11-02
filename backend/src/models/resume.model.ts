@@ -97,3 +97,53 @@ export async function getResumesByUserId(
         : Number(row.analysisScore),
   }));
 }
+
+export async function getResumeByIdAndUserId(
+  resumeId: string,
+  userId: string
+): Promise<Resume | null> {
+  const result = await pool.query<ResumeRow>(
+    `
+      SELECT ${RESUME_COLUMNS}
+      FROM resumes
+      WHERE id = $1
+        AND user_id = $2
+      LIMIT 1
+    `,
+    [resumeId, userId]
+  );
+
+  const row = result.rows[0];
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    ...row,
+    fileSize:
+      row.fileSize === null ? null : Number(row.fileSize),
+    analysisScore:
+      row.analysisScore === null
+        ? null
+        : Number(row.analysisScore),
+  };
+}
+
+export async function updateResumeAnalysisScore(
+  resumeId: string,
+  userId: string,
+  score: number
+): Promise<boolean> {
+  const result = await pool.query(
+    `
+      UPDATE resumes
+      SET analysis_score = $1
+      WHERE id = $2
+        AND user_id = $3
+    `,
+    [score, resumeId, userId]
+  );
+
+  return result.rowCount === 1;
+}

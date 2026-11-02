@@ -6,7 +6,11 @@ import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 import {
   saveUploadedResume,
   getUserResumes,
+  analyzeUserResume,
+  ResumeServiceError,
 } from "../services/resume.service";
+
+import { ResumeAnalysisError } from "../services/resumeAnalysis.service";
 
 import {
   ResumePdfExtractionError,
@@ -153,6 +157,82 @@ export async function listMyResumes(
     res.status(500).json({
       success: false,
       message: "Unable to retrieve resumes.",
+    });
+  }
+}
+export async function analyzeMyResume(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  const userId = req.user?.id;
+  const resumeId = req.params.resumeId;
+
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      message: "Authentication is required.",
+    });
+    return;
+  }
+
+  // Validate the PostgreSQL BIGINT ID without unsafe number conversion.
+  if (
+    typeof resumeId !== "string" ||
+    !/^[1-9]\d*$/.test(resumeId)
+  ) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid resume ID.",
+      code: "INVALID_RESUME_ID",
+    });
+    return;
+  }
+
+  try {
+    const result = await analyzeUserResume(resumeId, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Resume analyzed successfully.",
+      data: result,
+    });
+  } catch (error) {
+    if (error instanceof ResumeServiceError) {
+      const statusCode =
+        error.code === "RESUME_NOT_FOUND" ? 404 :
+        error.code === "RESUME_TEXT_UNAVAILABLE" ? 422 :
+        500;
+
+      res.status(statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+      return;
+    }
+
+    if (error instanceof ResumeAnalysisError) {
+  const statusCode =
+    error.code === "EMPTY_RESUME" ? 400 :
+    error.code === "RESUME_TOO_LONG" ? 413 :
+    error.code === "AI_NOT_CONFIGURED" ? 503 :
+    502;
+
+  res.status(statusCode).json({
+    success: false,
+    message: error.message,
+    code: error.code,
+  });
+
+  return;
+}
+
+    console.error("Resume analysis failed.");
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to analyze resume. Please try again.",
+      code: "RESUME_ANALYSIS_FAILED",
     });
   }
 }

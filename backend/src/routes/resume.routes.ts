@@ -5,6 +5,7 @@ import { uploadResume } from "../middleware/resumeUpload.middleware";
 import {
   uploadResumeController,
   listMyResumes,
+  analyzeMyResume,
 } from "../controllers/resume.controller";
 
 const router = Router();
@@ -21,6 +22,11 @@ router.get(
   "/",
   authenticateToken,
   listMyResumes
+);
+router.post(
+  "/:resumeId/analyze",
+  authenticateToken,
+  analyzeMyResume
 );
 
 export default router;
