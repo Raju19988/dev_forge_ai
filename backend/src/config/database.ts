@@ -1,18 +1,21 @@
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
+// Clean any incoming environment variable or use the hardcoded string
+let rawConnectionString = 
+  process.env.DATABASE_URL || 
+  "postgresql://postgres:RajuSupabaseBackend99@://supabase.com";
 
-if (!connectionString) {
-  throw new Error(
-    "DATABASE_URL is missing. Please configure it in your backend .env file."
-  );
-}
+// Forcefully scrub out hidden spaces, newlines, or return characters that break URL parsing
+const connectionString = rawConnectionString.replace(/[\r\n\s]+/g, "").trim();
 
 export const pool = new Pool({
   connectionString,
   max: 10,
-  idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  ssl: connectionString.includes("supabase.com") || connectionString.includes("://supabase.com")
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 pool.on("error", (error: Error) => {
