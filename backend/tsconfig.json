@@ -1,25 +1,12 @@
 {
   "compilerOptions": {
-    "version": true
+    "target": "ES2022",
+    "module": "CommonJS",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "services": {
-    "frontend": {
-      "root": "../frontend/",
-      "framework": "nextjs"
-    },
-    "backend": {
-      "root": "./",
-      "framework": "express"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": { "service": "backend" }
-    },
-    {
-      "source": "/(.*)",
-      "destination": { "service": "frontend" }
-    }
-  ]
+  "include": ["src"]
 }
