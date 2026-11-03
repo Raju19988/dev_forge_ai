@@ -28,3 +28,4 @@ backend/.env.*
 backend/storage/resumes/*
 !backend/storage/resumes/.gitkeep
 
+.vercel
