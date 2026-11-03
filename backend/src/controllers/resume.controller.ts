@@ -142,13 +142,19 @@ export async function listMyResumes(
       success: true,
       data: {
         resumes: resumes.map((resume) => ({
-          id: resume.id,
-          userId: resume.userId,
-          originalFilename: resume.originalFilename,
-          fileSize: resume.fileSize,
-          analysisScore: resume.analysisScore,
-          createdAt: resume.createdAt,
-        })),
+  id: resume.id,
+  userId: resume.userId,
+  originalFilename: resume.originalFilename,
+  fileSize: resume.fileSize,
+  analysisScore: resume.analysisScore,
+  analysisLatencyMs: resume.analysisLatencyMs,
+  inputTokens: resume.inputTokens,
+  outputTokens: resume.outputTokens,
+  totalTokens: resume.totalTokens,
+  estimatedCostUsd: resume.estimatedCostUsd,
+  analysisModel: resume.analysisModel,
+  createdAt: resume.createdAt,
+})),
       },
     });
   } catch (error) {

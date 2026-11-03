@@ -12,6 +12,20 @@ import {
 
 const MAX_RESUME_LENGTH = 25000;
 
+export interface ResumeAnalysisMetrics {
+  analysisLatencyMs: number;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  estimatedCostUsd: number | null;
+  analysisModel: string;
+}
+
+export interface ResumeAnalysisResult {
+  analysis: ResumeAnalysis;
+  metrics: ResumeAnalysisMetrics;
+}
+
 export class ResumeAnalysisError extends Error {
   constructor(
     message: string,
@@ -24,7 +38,7 @@ export class ResumeAnalysisError extends Error {
 
 export async function analyzeResume(
   resumeText: string,
-): Promise<ResumeAnalysis> {
+): Promise<ResumeAnalysisResult> {
   const normalizedText = resumeText.trim();
 
   if (!normalizedText) {
@@ -43,9 +57,12 @@ export async function analyzeResume(
 
   try {
     const client = getGeminiClient();
+const model = getGeminiModel();
 
-    const response = await client.models.generateContent({
-      model: getGeminiModel(),
+const startTime = Date.now();
+
+const response = await client.models.generateContent({
+  model,
 
       contents: `
 You are an experienced technical resume evaluator.
@@ -169,7 +186,23 @@ ${normalizedText}
       );
     }
 
-    return ResumeAnalysisSchema.parse(parsedResponse);
+    const analysis = ResumeAnalysisSchema.parse(parsedResponse);
+
+const analysisLatencyMs = Date.now() - startTime;
+
+const usage = response.usageMetadata;
+
+return {
+  analysis,
+  metrics: {
+    analysisLatencyMs,
+    inputTokens: usage?.promptTokenCount ?? null,
+    outputTokens: usage?.candidatesTokenCount ?? null,
+    totalTokens: usage?.totalTokenCount ?? null,
+    estimatedCostUsd: null,
+    analysisModel: response.modelVersion ?? model,
+  },
+};
 
   } catch (error) {
     if (error instanceof ResumeAnalysisError) {

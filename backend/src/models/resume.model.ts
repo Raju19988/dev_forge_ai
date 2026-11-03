@@ -9,6 +9,13 @@ export interface Resume {
   extractedText: string | null;
   analysisScore: number | null;
   createdAt: Date;
+
+  analysisLatencyMs: number | null;
+inputTokens: number | null;
+outputTokens: number | null;
+totalTokens: number | null;
+estimatedCostUsd: number | null;
+analysisModel: string | null;
 }
 
 interface ResumeRow {
@@ -20,6 +27,13 @@ interface ResumeRow {
   extractedText: string | null;
   analysisScore: string | null;
   createdAt: Date;
+
+  analysisLatencyMs: string | null;
+inputTokens: string | null;
+outputTokens: string | null;
+totalTokens: string | null;
+estimatedCostUsd: string | null;
+analysisModel: string | null;
 }
 
 const RESUME_COLUMNS = `
@@ -30,7 +44,13 @@ const RESUME_COLUMNS = `
   file_size::text AS "fileSize",
   extracted_text AS "extractedText",
   analysis_score AS "analysisScore",
-  created_at AS "createdAt"
+  created_at AS "createdAt",
+  analysis_latency_ms::text AS "analysisLatencyMs",
+input_tokens::text AS "inputTokens",
+output_tokens::text AS "outputTokens",
+total_tokens::text AS "totalTokens",
+estimated_cost_usd::text AS "estimatedCostUsd",
+analysis_model AS "analysisModel"
 `;
 
 export async function createResume(
@@ -64,14 +84,39 @@ export async function createResume(
   const row = result.rows[0];
 
   return {
-    ...row,
-    fileSize:
-      row.fileSize === null ? null : Number(row.fileSize),
-    analysisScore:
-      row.analysisScore === null
-        ? null
-        : Number(row.analysisScore),
-  };
+  ...row,
+  fileSize:
+    row.fileSize === null ? null : Number(row.fileSize),
+  analysisScore:
+    row.analysisScore === null
+      ? null
+      : Number(row.analysisScore),
+
+  analysisLatencyMs:
+    row.analysisLatencyMs === null
+      ? null
+      : Number(row.analysisLatencyMs),
+
+  inputTokens:
+    row.inputTokens === null
+      ? null
+      : Number(row.inputTokens),
+
+  outputTokens:
+    row.outputTokens === null
+      ? null
+      : Number(row.outputTokens),
+
+  totalTokens:
+    row.totalTokens === null
+      ? null
+      : Number(row.totalTokens),
+
+  estimatedCostUsd:
+    row.estimatedCostUsd === null
+      ? null
+      : Number(row.estimatedCostUsd),
+};
 }
 
 export async function getResumesByUserId(
@@ -88,14 +133,41 @@ export async function getResumesByUserId(
   );
 
   return result.rows.map((row) => ({
-    ...row,
-    fileSize:
-      row.fileSize === null ? null : Number(row.fileSize),
-    analysisScore:
-      row.analysisScore === null
-        ? null
-        : Number(row.analysisScore),
-  }));
+  ...row,
+
+  fileSize:
+    row.fileSize === null ? null : Number(row.fileSize),
+
+  analysisScore:
+    row.analysisScore === null
+      ? null
+      : Number(row.analysisScore),
+
+  analysisLatencyMs:
+    row.analysisLatencyMs === null
+      ? null
+      : Number(row.analysisLatencyMs),
+
+  inputTokens:
+    row.inputTokens === null
+      ? null
+      : Number(row.inputTokens),
+
+  outputTokens:
+    row.outputTokens === null
+      ? null
+      : Number(row.outputTokens),
+
+  totalTokens:
+    row.totalTokens === null
+      ? null
+      : Number(row.totalTokens),
+
+  estimatedCostUsd:
+    row.estimatedCostUsd === null
+      ? null
+      : Number(row.estimatedCostUsd),
+}));
 }
 
 export async function getResumeByIdAndUserId(
@@ -120,29 +192,79 @@ export async function getResumeByIdAndUserId(
   }
 
   return {
-    ...row,
-    fileSize:
-      row.fileSize === null ? null : Number(row.fileSize),
-    analysisScore:
-      row.analysisScore === null
-        ? null
-        : Number(row.analysisScore),
-  };
+  ...row,
+  fileSize:
+    row.fileSize === null ? null : Number(row.fileSize),
+  analysisScore:
+    row.analysisScore === null
+      ? null
+      : Number(row.analysisScore),
+
+  analysisLatencyMs:
+    row.analysisLatencyMs === null
+      ? null
+      : Number(row.analysisLatencyMs),
+
+  inputTokens:
+    row.inputTokens === null
+      ? null
+      : Number(row.inputTokens),
+
+  outputTokens:
+    row.outputTokens === null
+      ? null
+      : Number(row.outputTokens),
+
+  totalTokens:
+    row.totalTokens === null
+      ? null
+      : Number(row.totalTokens),
+
+  estimatedCostUsd:
+    row.estimatedCostUsd === null
+      ? null
+      : Number(row.estimatedCostUsd),
+};
 }
 
 export async function updateResumeAnalysisScore(
   resumeId: string,
   userId: string,
-  score: number
+  score: number,
+  metrics: {
+    analysisLatencyMs: number;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    totalTokens: number | null;
+    estimatedCostUsd: number | null;
+    analysisModel: string;
+  }
 ): Promise<boolean> {
   const result = await pool.query(
     `
       UPDATE resumes
-      SET analysis_score = $1
-      WHERE id = $2
-        AND user_id = $3
+      SET
+        analysis_score = $1,
+        analysis_latency_ms = $2,
+        input_tokens = $3,
+        output_tokens = $4,
+        total_tokens = $5,
+        estimated_cost_usd = $6,
+        analysis_model = $7
+      WHERE id = $8
+        AND user_id = $9
     `,
-    [score, resumeId, userId]
+    [
+      score,
+      metrics.analysisLatencyMs,
+      metrics.inputTokens,
+      metrics.outputTokens,
+      metrics.totalTokens,
+      metrics.estimatedCostUsd,
+      metrics.analysisModel,
+      resumeId,
+      userId,
+    ]
   );
 
   return result.rowCount === 1;

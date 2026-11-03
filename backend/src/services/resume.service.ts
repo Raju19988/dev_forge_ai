@@ -86,15 +86,14 @@ export async function analyzeUserResume(
     );
   }
 
-  const analysis = await analyzeResume(
-    resume.extractedText
-  );
+  const result = await analyzeResume(resume.extractedText);
 
-  const updated = await updateResumeAnalysisScore(
-    resumeId,
-    userId,
-    analysis.score
-  );
+const updated = await updateResumeAnalysisScore(
+  resumeId,
+  userId,
+  result.analysis.score,
+  result.metrics
+);
 
   if (!updated) {
     throw new ResumeServiceError(
@@ -104,7 +103,8 @@ export async function analyzeUserResume(
   }
 
   return {
-    resumeId: resume.id,
-    analysis,
-  };
+  resumeId: resume.id,
+  analysis: result.analysis,
+  metrics: result.metrics,
+};
 }

@@ -205,3 +205,114 @@ export async function updateMyProfile(
 
   return readResponse<DeveloperProfile>(response);
 }
+// =========================
+// RESUME AI TYPES
+// =========================
+
+export interface Resume {
+  id: string;
+  userId: string;
+  originalFilename: string;
+  fileSize: number;
+  analysisScore: number | null;
+
+  analysisLatencyMs: number | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  estimatedCostUsd: number | null;
+  analysisModel: string | null;
+
+  createdAt: string;
+}
+
+export interface ResumeSkill {
+  name: string;
+  category: string;
+  proficiency: string;
+  evidence: string;
+}
+export interface ResumeAnalysis {
+  score: number;
+  skills: ResumeSkill[];
+  strengths: string[];
+  gaps: string[];
+  summary: string;
+}
+
+export interface ResumeAnalysisMetrics {
+  analysisLatencyMs: number;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+  estimatedCostUsd: number | null;
+  analysisModel: string;
+}
+
+export interface ResumeAnalysisResult {
+  resumeId: string;
+  analysis: ResumeAnalysis;
+  metrics: ResumeAnalysisMetrics;
+}
+
+// =========================
+// RESUME AI API FUNCTIONS
+// =========================
+
+// Upload a PDF resume.
+export async function uploadResume(
+  accessToken: string,
+  file: File
+): Promise<ApiResponse<{ resume: Resume }>> {
+  const formData = new FormData();
+  formData.append("resume", file);
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/resumes/upload`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    }
+  );
+
+  return readResponse<{ resume: Resume }>(response);
+}
+
+// Retrieve the current user's uploaded resumes.
+export async function getMyResumes(
+  accessToken: string
+): Promise<ApiResponse<{ resumes: Resume[] }>> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/resumes`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  return readResponse<{ resumes: Resume[] }>(response);
+}
+
+// Analyze an uploaded resume using Gemini AI.
+export async function analyzeMyResume(
+  accessToken: string,
+  resumeId: string
+): Promise<ApiResponse<ResumeAnalysisResult>> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/resumes/${encodeURIComponent(resumeId)}/analyze`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return readResponse<ResumeAnalysisResult>(response);
+}

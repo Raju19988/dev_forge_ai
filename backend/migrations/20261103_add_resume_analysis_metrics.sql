@@ -1,0 +1,11 @@
+BEGIN;
+
+ALTER TABLE resumes
+  ADD COLUMN IF NOT EXISTS analysis_latency_ms BIGINT,
+  ADD COLUMN IF NOT EXISTS input_tokens BIGINT,
+  ADD COLUMN IF NOT EXISTS output_tokens BIGINT,
+  ADD COLUMN IF NOT EXISTS total_tokens BIGINT,
+  ADD COLUMN IF NOT EXISTS estimated_cost_usd NUMERIC(12, 8),
+  ADD COLUMN IF NOT EXISTS analysis_model VARCHAR(100);
+
+COMMIT;
