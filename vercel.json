@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "services": [
+    {
+      "name": "frontend",
+      "src": "frontend",
+      "preset": "nextjs"
+    },
+    {
+      "name": "backend",
+      "src": "backend",
+      "preset": "express"
+    }
+  ]
+}
