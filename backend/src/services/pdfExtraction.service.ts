@@ -11,7 +11,6 @@ export class ResumePdfExtractionError extends Error {
     message: string
   ) {
     super(message);
-
     this.name = "ResumePdfExtractionError";
   }
 }
@@ -25,18 +24,16 @@ export async function extractResumeText(
 
   try {
     parser = new PDFParse({
-      data: pdfBuffer,
+      data: new Uint8Array(pdfBuffer),
     });
 
     const result = await parser.getText();
 
-    // Remove null characters and unnecessary surrounding whitespace.
     const extractedText = result.text
       .replace(/\u0000/g, "")
       .replace(/\r\n/g, "\n")
       .trim();
 
-    // Reject PDFs without extractable text.
     if (!extractedText) {
       throw new ResumePdfExtractionError(
         "EMPTY_TEXT",
@@ -46,18 +43,17 @@ export async function extractResumeText(
 
     return extractedText;
   } catch (error) {
-    // Preserve our application-specific errors.
     if (error instanceof ResumePdfExtractionError) {
       throw error;
     }
 
-    // Convert parser failures into a controlled application error.
+    console.error("PDF extraction error:", error);
+
     throw new ResumePdfExtractionError(
       "INVALID_PDF",
       "The uploaded PDF is corrupted or cannot be processed."
     );
   } finally {
-    // Release PDF parser resources.
     if (parser) {
       await parser.destroy();
     }
