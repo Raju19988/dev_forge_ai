@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Navbar() {
   return (
     <header className="navbar">
@@ -11,9 +12,15 @@ export default function Navbar() {
         <a href="#about">About</a>
       </nav>
 
-      <a className="nav-cta" href="#get-started">
-        Get Started
-      </a>
+      <div className="nav-actions">
+  <Link href="/login" className="nav-login">
+    Login
+  </Link>
+
+  <Link href="#get-started" className="nav-cta">
+    Get Started
+  </Link>
+</div>
     </header>
   );
 }
